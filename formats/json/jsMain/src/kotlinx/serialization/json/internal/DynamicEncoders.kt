@@ -158,6 +158,10 @@ private class DynamicObjectEncoder(
     override fun shouldEncodeElementDefault(descriptor: SerialDescriptor, index: Int) =
         json.configuration.encodeDefaults
 
+    override fun skipNullElement(descriptor: SerialDescriptor, index: Int): Boolean {
+        return json.configuration.omitNull
+    }
+
     private fun enterNode(jsObject: dynamic, writeMode: WriteMode) {
         val child = Node(writeMode, jsObject)
         child.parent = current

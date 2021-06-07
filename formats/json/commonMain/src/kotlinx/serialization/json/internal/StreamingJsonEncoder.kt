@@ -147,6 +147,11 @@ internal class StreamingJsonEncoder(
         return true
     }
 
+    override fun skipNullElement(descriptor: SerialDescriptor, index: Int): Boolean {
+        // function should called only for nullable elements so no need to check `descriptor`
+        return configuration.omitNull
+    }
+
     override fun encodeInline(inlineDescriptor: SerialDescriptor): Encoder =
         if (inlineDescriptor.isUnsignedNumber) StreamingJsonEncoder(
             ComposerForUnsignedNumbers(

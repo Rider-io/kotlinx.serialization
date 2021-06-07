@@ -22,6 +22,7 @@ public class JsonConfiguration internal constructor(
     public val isLenient: Boolean = false,
     public val allowStructuredMapKeys: Boolean = false,
     public val prettyPrint: Boolean = false,
+    public val omitNull: Boolean = false,
     @ExperimentalSerializationApi
     public val prettyPrintIndent: String = "    ",
     public val coerceInputValues: Boolean = false,
@@ -33,6 +34,6 @@ public class JsonConfiguration internal constructor(
 
     /** @suppress Dokka **/
     override fun toString(): String {
-        return "JsonConfiguration(encodeDefaults=$encodeDefaults, ignoreUnknownKeys=$ignoreUnknownKeys, isLenient=$isLenient, allowStructuredMapKeys=$allowStructuredMapKeys, prettyPrint=$prettyPrint, prettyPrintIndent='$prettyPrintIndent', coerceInputValues=$coerceInputValues, useArrayPolymorphism=$useArrayPolymorphism, classDiscriminator='$classDiscriminator', allowSpecialFloatingPointValues=$allowSpecialFloatingPointValues)"
+        return "JsonConfiguration(encodeDefaults=$encodeDefaults, ignoreUnknownKeys=$ignoreUnknownKeys, isLenient=$isLenient, allowStructuredMapKeys=$allowStructuredMapKeys, prettyPrint=$prettyPrint, omitNull=$omitNull, prettyPrintIndent='$prettyPrintIndent', coerceInputValues=$coerceInputValues, useArrayPolymorphism=$useArrayPolymorphism, classDiscriminator='$classDiscriminator', allowSpecialFloatingPointValues=$allowSpecialFloatingPointValues)"
     }
 }

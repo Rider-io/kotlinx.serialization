@@ -40,6 +40,10 @@ public abstract class AbstractEncoder : Encoder, CompositeEncoder {
         throw SerializationException("'null' is not supported by default")
     }
 
+    public open fun skipNullElement(descriptor: SerialDescriptor, index: Int): Boolean {
+        return false
+    }
+
     override fun encodeBoolean(value: Boolean): Unit = encodeValue(value)
     override fun encodeByte(value: Byte): Unit = encodeValue(value)
     override fun encodeShort(value: Short): Unit = encodeValue(value)
@@ -86,6 +90,10 @@ public abstract class AbstractEncoder : Encoder, CompositeEncoder {
         serializer: SerializationStrategy<T>,
         value: T?
     ) {
+        if (value == null && skipNullElement(descriptor, index)) {
+            return
+        }
+
         if (encodeElement(descriptor, index))
             encodeNullableSerializableValue(serializer, value)
     }

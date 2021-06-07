@@ -25,6 +25,8 @@ open class TwitterBenchmark {
     private val input = TwitterBenchmark::class.java.getResource("/twitter.json").readBytes().decodeToString()
     private val twitter = Json.decodeFromString(Twitter.serializer(), input)
 
+    private val jsonOmitNull = Json { omitNull = true }
+
     @Setup
     fun init() {
         require(twitter == Json.decodeFromString(Twitter.serializer(), Json.encodeToString(Twitter.serializer(), twitter)))
@@ -33,6 +35,9 @@ open class TwitterBenchmark {
     // Order of magnitude: 4-7 op/ms
     @Benchmark
     fun decodeTwitter() = Json.decodeFromString(Twitter.serializer(), input)
+
+    @Benchmark
+    fun decodeTwitterOmitNull() = jsonOmitNull.decodeFromString(Twitter.serializer(), input)
 
     @Benchmark
     fun encodeTwitter() = Json.encodeToString(Twitter.serializer(), twitter)

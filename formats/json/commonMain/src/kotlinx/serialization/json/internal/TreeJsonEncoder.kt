@@ -171,6 +171,10 @@ private open class JsonTreeEncoder(
         content[key] = element
     }
 
+    override fun skipNullElement(descriptor: SerialDescriptor, index: Int): Boolean {
+        return configuration.omitNull
+    }
+
     override fun getCurrent(): JsonElement = JsonObject(content)
 }
 

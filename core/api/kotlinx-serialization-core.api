@@ -379,6 +379,7 @@ public abstract class kotlinx/serialization/encoding/AbstractEncoder : kotlinx/s
 	public fun encodeValue (Ljava/lang/Object;)V
 	public fun endStructure (Lkotlinx/serialization/descriptors/SerialDescriptor;)V
 	public fun shouldEncodeElementDefault (Lkotlinx/serialization/descriptors/SerialDescriptor;I)Z
+	public fun skipNullElement (Lkotlinx/serialization/descriptors/SerialDescriptor;I)Z
 }
 
 public abstract interface class kotlinx/serialization/encoding/CompositeDecoder {
@@ -626,6 +627,13 @@ public final class kotlinx/serialization/internal/DoubleSerializer : kotlinx/ser
 	public fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
 	public fun serialize (Lkotlinx/serialization/encoding/Encoder;D)V
 	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+}
+
+public abstract class kotlinx/serialization/internal/ElementMarker {
+	public fun <init> (Lkotlinx/serialization/descriptors/SerialDescriptor;)V
+	protected abstract fun isPoppedElement (Lkotlinx/serialization/descriptors/SerialDescriptor;I)Z
+	public final fun mark (I)V
+	public final fun popUnmarkedIndex ()I
 }
 
 public final class kotlinx/serialization/internal/EnumDescriptor : kotlinx/serialization/internal/PluginGeneratedSerialDescriptor {
@@ -1091,6 +1099,7 @@ public abstract class kotlinx/serialization/internal/TaggedEncoder : kotlinx/ser
 	protected final fun popTag ()Ljava/lang/Object;
 	protected final fun pushTag (Ljava/lang/Object;)V
 	public fun shouldEncodeElementDefault (Lkotlinx/serialization/descriptors/SerialDescriptor;I)Z
+	protected fun skipNullElement (Lkotlinx/serialization/descriptors/SerialDescriptor;I)Z
 }
 
 public final class kotlinx/serialization/internal/TripleSerializer : kotlinx/serialization/KSerializer {

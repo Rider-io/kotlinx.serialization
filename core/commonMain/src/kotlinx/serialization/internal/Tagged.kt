@@ -61,6 +61,10 @@ public abstract class TaggedEncoder<Tag : Any?> : Encoder, CompositeEncoder {
         return true
     }
 
+    protected open fun skipNullElement(descriptor: SerialDescriptor, index: Int): Boolean {
+        return false
+    }
+
     final override fun encodeNotNullMark() {} // Does nothing, open because is not really required
     open override fun encodeNull(): Unit = encodeTaggedNull(popTag())
     final override fun encodeBoolean(value: Boolean): Unit = encodeTaggedBoolean(popTag(), value)
@@ -143,6 +147,10 @@ public abstract class TaggedEncoder<Tag : Any?> : Encoder, CompositeEncoder {
         serializer: SerializationStrategy<T>,
         value: T?
     ) {
+        if (value == null && skipNullElement(descriptor, index)) {
+            return
+        }
+
         if (encodeElement(descriptor, index))
             encodeNullableSerializableValue(serializer, value)
     }

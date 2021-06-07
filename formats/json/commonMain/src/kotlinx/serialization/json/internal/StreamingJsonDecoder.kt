@@ -19,12 +19,14 @@ import kotlin.jvm.*
 internal open class StreamingJsonDecoder(
     final override val json: Json,
     private val mode: WriteMode,
-    @JvmField internal val lexer: JsonLexer
+    @JvmField internal val lexer: JsonLexer,
+    descriptor: SerialDescriptor
 ) : JsonDecoder, AbstractDecoder() {
 
     override val serializersModule: SerializersModule = json.serializersModule
     private var currentIndex = -1
     private val configuration = json.configuration
+    private val absenceReader: JsonAbsenceReader? = if (configuration.omitNull) JsonAbsenceReader(descriptor) else null
 
     override fun decodeJsonElement(): JsonElement = JsonTreeReader(json.configuration, lexer).read()
 
@@ -41,12 +43,13 @@ internal open class StreamingJsonDecoder(
             WriteMode.LIST, WriteMode.MAP, WriteMode.POLY_OBJ -> StreamingJsonDecoder(
                 json,
                 newMode,
-                lexer
+                lexer,
+                descriptor
             )
-            else -> if (mode == newMode) {
+            else -> if (mode == newMode && !json.configuration.omitNull) {
                 this
             } else {
-                StreamingJsonDecoder(json, newMode, lexer)
+                StreamingJsonDecoder(json, newMode, lexer, descriptor)
             }
         }
     }
@@ -56,7 +59,7 @@ internal open class StreamingJsonDecoder(
     }
 
     override fun decodeNotNullMark(): Boolean {
-        return lexer.tryConsumeNotNull()
+        return !(absenceReader?.poppedNull?:false) && lexer.tryConsumeNotNull()
     }
 
     override fun decodeNull(): Nothing? {
@@ -124,6 +127,7 @@ internal open class StreamingJsonDecoder(
                     hasComma = lexer.tryConsumeComma()
                     false // Known element, but coerced
                 } else {
+                    absenceReader?.mark(index)
                     return index // Known element without coercing, return it
                 }
             } else {
@@ -135,7 +139,8 @@ internal open class StreamingJsonDecoder(
             }
         }
         if (hasComma) lexer.fail("Unexpected trailing comma")
-        return CompositeDecoder.DECODE_DONE
+
+        return absenceReader?.popUnmarkedIndex() ?: CompositeDecoder.DECODE_DONE
     }
 
     private fun handleUnknown(key: String): Boolean {
