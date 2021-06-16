@@ -6,6 +6,8 @@ package kotlinx.serialization.features
 
 import kotlinx.serialization.*
 import kotlinx.serialization.builtins.*
+import kotlinx.serialization.features.sealed.SealedChild
+import kotlinx.serialization.features.sealed.SealedParent
 import kotlinx.serialization.internal.*
 import kotlinx.serialization.json.*
 import kotlinx.serialization.modules.*
@@ -256,5 +258,16 @@ class SealedClassesSerializationTest : JsonTestBase() {
         if (currentPlatform != Platform.JVM) return
         val resSer = serializer<SealedProtocol>()
         assertEquals(SealedProtocol::class, (resSer as AbstractPolymorphicSerializer).baseClass)
+    }
+
+    @Test
+    fun testClassesFromDifferentFiles() {
+        val p: SealedParent = SealedChild(5)
+        if (isJvm() || isJsLegacy()) {
+            assertEquals("""{"type":"first child","i":1,"j":5}""", Json.encodeToString(p))
+        } else {
+            // This would be fixed for native and JS/IR in plugin in 1.5.20 - remove condition and else branch in this case
+            assertFails { Json.encodeToString(p) }
+        }
     }
 }
